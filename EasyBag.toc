@@ -1,0 +1,10 @@
+## Interface: 110000
+## Title: EasyBag
+## Notes: Mini Inventory Filter
+## Author: EEsto
+## Version: 0.1
+
+## IconTexture: Interface\AddOns\EasyBag\icon
+
+localization.lua
+main.lua

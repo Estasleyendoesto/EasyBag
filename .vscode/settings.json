@@ -1,0 +1,19 @@
+{
+    "Lua.diagnostics.globals": [
+        "ContainerFrameCombinedBags",
+        "CreateFrame",
+        "UIDropDownMenu_CreateInfo",
+        "UIDropDownMenu_AddButton",
+        "UIDropDownMenu_Initialize",
+        "ToggleDropDownMenu",
+        "GameTooltip",
+        "GetContainerNumSlots",
+        "GetItemInfo",
+        "GetContainerItemID",
+        "C_Container",
+        "GetLocale",
+        "C_MountJournal",
+        "C_PetJournal",
+        "C_ToyBox"
+    ]
+}
