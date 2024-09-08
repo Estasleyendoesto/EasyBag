@@ -14,6 +14,8 @@
         "GetLocale",
         "C_MountJournal",
         "C_PetJournal",
-        "C_ToyBox"
+        "C_ToyBox",
+        "BagItemSearchBox",
+        "C_Timer"
     ]
 }

@@ -1,12 +1,13 @@
 EasyBag = EasyBag or {}
 EasyBag.LOCALIZATION = {
     ["esES"] = {
-        {text = "Todo",                                          typo = "Todo"},
+        {text = "Todo"},
+        {text = "Reciente"},
         {text = "Llaves",                                        typo = "Miscelánea", subtype= "Llave"},
-        {text = "Cofres",                                        typo = "Miscelánea", subtype= "Contenedor"},
+        {text = "Cofres",                                        typo = "Miscelánea", subtype= "Otros"},
         {text = "Objetos de Misión",                             typo = "Miscelánea", subtype= "Misión"},
         {text = "Coleccionables (Monturas, Mascotas, Juguetes)", typo = "Miscelánea"},
-        {text = "Materiales de Profesión",                       typo = "Habilidad Comercial"},
+        {text = "Materiales de Profesión",                       typo = "Habilidad comercial"},
         {text = "Armaduras",                                     typo = "Armadura"},
         {text = "Armas",                                         typo = "Arma"},
         {text = "Anillos y amuletos",                            typo = "Armadura"},
@@ -16,7 +17,8 @@ EasyBag.LOCALIZATION = {
         ["tooltip"] = "Filtrar"
     },
     ["enUS"] = {
-        {text = "All",                               type = ""},
+        {text = "All"},
+        {text = "Recent"},
         {text = "Keys",                              type = "", subtype= ""},
         {text = "Chests",                            type = "", subtype= ""},
         {text = "Quest Items",                       type = "", subtype= ""},

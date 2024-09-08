@@ -1,10 +1,13 @@
 --[[
-    EasyBag, Made By EEsto For All
-    Script Ver: 0.1, 07/09/2024
+    EasyBag Addon
+    Version: 0.1 (07/09/2024)
+    Author: EEsto
+    It simplifies inventory management, allowing players to easily filter and locate items within their bags by category.
 ]]
 
 EasyBag.OPTIONS = {
     {selected = "ALL"},
+    {selected = "RECENT"},
     {selected = "KEY"},
     {selected = "CHEST"},
     {selected = "QUEST"},
@@ -52,13 +55,17 @@ function EasyBag:SearchInventory()
     return items
 end
 
-function EasyBag:SetDark(frame)
+function EasyBag:SetDark(frame, alpha)
     if not frame.darkenTexture then
         local darkenTexture = frame:CreateTexture(nil, "OVERLAY")
         darkenTexture:SetAllPoints()
         darkenTexture:SetColorTexture(0, 0, 0, 0.7)
         frame.darkenTexture = darkenTexture
-        frame:SetAlpha(0.5)
+        frame:SetAlpha(alpha or 0.5)
+
+        if frame.IconBorder then
+            frame.IconBorder:SetAlpha(alpha or 0.1)
+        end
     end
 end
 
@@ -67,6 +74,10 @@ function EasyBag:Reveal(frame)
         frame.darkenTexture:SetColorTexture(0, 0, 0, 0)
         frame.darkenTexture = nil
         frame:SetAlpha(1)
+
+        if frame.IconBorder then
+            frame.IconBorder:SetAlpha(1)
+        end
     end
 end
 
@@ -137,18 +148,37 @@ function EasyBag:GetSelectedOption(selected)
                     reveal = true
                 end
             end
-        elseif selected == "QUEST" or selected == "KEY" or selected == "CHEST" then
+        elseif selected == "QUEST" or selected == "KEY" then
             reveal = false
             if item.subtype == option.subtype then
                 reveal = true
             end
+        elseif selected == "CHEST" then
+            reveal = false
+            if item.subtype == option.subtype then
+                local containerInfo = C_Container.GetContainerItemInfo(item.bag, item.slot)
+                if containerInfo and containerInfo.hasLoot then
+                    reveal = true
+                end
+            end
         elseif selected == "ALL" then
             reveal = true
+            EasyBag.selected = nil
+        elseif selected == "RECENT" then
+            reveal = false
+            if EasyBag.recentLoot then
+                for _, loot in ipairs(EasyBag.recentLoot) do
+                    local lootID, lootName = loot[1], loot[2]
+                    if item.id == lootID or item.name == lootName then
+                        reveal = true
+                    end
+                end
+            end
         end
 
-        if item.name == "Empty" then
-           reveal = true
-        end
+        -- if item.name == "Empty" then
+        --    reveal = true
+        -- end
 
         if reveal then
             self:Reveal(frame)
@@ -168,7 +198,10 @@ function EasyBag:CreateDropdownMenu(button)
         for _, option in ipairs(translated_options) do
             info.text = option.text
             info.selected = option.selected
-            info.func = function() EasyBag:GetSelectedOption(option.selected) end
+            info.func = function()
+                EasyBag.selected = option.selected
+                EasyBag:GetSelectedOption(option.selected)
+            end
             UIDropDownMenu_AddButton(info)
         end
     end, "MENU")
@@ -200,13 +233,61 @@ function EasyBag:CreateDropdownButton()
     return button
 end
 
-EasyBag:CreateDropdownButton()
+function EasyBag:Initialize()
+    local eventFrame = CreateFrame("Frame")
+    eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    eventFrame:RegisterEvent("BAG_UPDATE")
+    eventFrame:RegisterEvent("BAG_UPDATE_DELAYED")
+    eventFrame:RegisterEvent("CHAT_MSG_LOOT")
 
-if ContainerFrameCombinedBags then
-    ContainerFrameCombinedBags:HookScript("OnHide", function()
-        local frames = ContainerFrameCombinedBags.Items
-        for _, frame in pairs(frames) do
-            EasyBag:Reveal(frame)
+    eventFrame:SetScript("OnEvent", function(self, event, ...)
+        if event == "PLAYER_ENTERING_WORLD" then
+            -- Inicialización del addon
+            EasyBag:CreateDropdownButton()
+            
+            -- Detección de ocultación de las bolsas combinadas
+            if ContainerFrameCombinedBags then
+                ContainerFrameCombinedBags:HookScript("OnHide", function()
+                    local frames = ContainerFrameCombinedBags.Items
+                    for _, frame in pairs(frames) do
+                        EasyBag:Reveal(frame)
+                    end
+                end)
+            end
+
+            if BagItemSearchBox then
+                BagItemSearchBox:HookScript("OnTextChanged", function(self)
+                    local frames = ContainerFrameCombinedBags.Items
+                    for _, frame in pairs(frames) do
+                        EasyBag:Reveal(frame)
+                    end
+                end)
+            end
+        elseif  event == "BAG_UPDATE" or event == "BAG_UPDATE_DELAYED" then
+            if EasyBag.selected then
+                EasyBag:GetSelectedOption(EasyBag.selected)
+            end
+        elseif event == "CHAT_MSG_LOOT" then
+            local text = ...
+            local itemLink = string.match(text, "|c%x+|Hitem:.-|h.-|h|r")
+            if itemLink then
+                local itemID = string.match(itemLink, "Hitem:(%d+)")
+
+                if not EasyBag.countdownActive then
+                    EasyBag.recentLoot = {}
+                    EasyBag.countdownActive = true
+                    EasyBag.countdown = C_Timer.After(1.2, function()
+                        EasyBag.countdownActive = false
+                    end)
+                end
+
+                if EasyBag.countdownActive then
+                    EasyBag.recentLoot = EasyBag.recentLoot or {}
+                    table.insert(EasyBag.recentLoot, {itemID, GetItemInfo(itemLink)})
+                end
+            end
         end
     end)
 end
+
+EasyBag:Initialize()
