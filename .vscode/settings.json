@@ -16,6 +16,8 @@
         "C_PetJournal",
         "C_ToyBox",
         "BagItemSearchBox",
-        "C_Timer"
+        "C_Timer",
+        "LibStub",
+        "hooksecurefunc"
     ]
 }
