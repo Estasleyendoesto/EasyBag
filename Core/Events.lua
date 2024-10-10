@@ -6,22 +6,26 @@ function Events:OnEnable()
     self:RegisterEvent("BAG_UPDATE", "OnBagUpdate")
     self:RegisterEvent("BAG_UPDATE_DELAYED", "OnBagUpdateDelayed")
     self:RegisterEvent("CHAT_MSG_LOOT", "OnLoot")
+    -- self:RegisterEvent("MERCHANT_SHOW", "OnMerchant")
+    self:RegisterEvent("MERCHANT_CLOSED", "OnMerchant")
 
     -- Detector de apertura / cierre de bolsas
     hooksecurefunc("ToggleAllBags", function()
-        Events:SendMessage("SET_REVEAL_ALL")
-        Events:SendMessage("HIDE_RESET_BUTTON")
-        EasyBag.selectedOption = nil
+        self:Quit()
     end)
 
     -- Desactiva el filtro al usar el buscador
     if BagItemSearchBox then
         BagItemSearchBox:HookScript("OnTextChanged", function()
-            Events:SendMessage("SET_REVEAL_ALL")
-            Events:SendMessage("HIDE_RESET_BUTTON")
-            EasyBag.selectedOption = nil
+            self:Quit()
         end)
     end
+end
+
+function Events:Quit()
+    Events:SendMessage("SET_REVEAL_ALL")
+    Events:SendMessage("HIDE_RESET_BUTTON")
+    EasyBag.selectedOption = nil
 end
 
 function Events:OnEnteringWorld()
@@ -48,4 +52,8 @@ function Events:OnLoot(ev, ...)
         local itemID = string.match(itemLink, "Hitem:(%d+)")
         table.insert(EasyBag.recentLoot, {itemID, GetItemInfo(itemLink)})
     end
+end
+
+function Events:OnMerchant()
+    self:Quit()
 end

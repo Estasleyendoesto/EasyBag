@@ -3,3 +3,6 @@ Version 0.1:
 
 Version 0.2:
 - Code Refactoring
+
+Version 0.2.1:
+- Now the filters reset when interacting with a merchant.
