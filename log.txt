@@ -6,3 +6,6 @@ Version 0.2:
 
 Version 0.2.1:
 - Now the filters reset when interacting with a merchant.
+
+Versión 0.2.2:
+- The missing ace3 library has been added.
