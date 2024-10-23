@@ -1,4 +1,4 @@
-## Interface: 110000
+## Interface: 110005
 ## Title: EasyBag
 ## Notes: Simple Inventory Filter
 ## Author: EEsto
